@@ -276,17 +276,25 @@ def results_plt(costs: list, sols: np.ndarray, idx: list):
     print('Plot saved in file \"{}\"\n'.format(file))
 
 
-def stat(idx, costs):
+def stat(idx, costs, sols):
     final_costs = np.array([cost[-1] for cost in costs])
+    sols = sols[:,-1,:]
+
+    final_sol_mean = [np.mean(sols[:,i]) for i in range(sols.shape[1])]
+    final_sol_std = [np.std(sols[:,i]) for i in range(sols.shape[1])]
+
     final_cost_mean = np.mean(final_costs)
     final_cost_std = np.std(final_costs)
 
+    final_sol_mean = ['{:.5e}'.format(x) for x in final_sol_mean]
+    final_sol_std = ['{:.5e}'.format(x) for x in final_sol_std]
+
     idx_mean = np.mean(idx)
     idx_std = np.std(idx)
-
-    print('Final cost mean: {cost_mean:.4e}\nFinal cost standard deviation: {cost_std:.4e}\n'
+    print('Mean of positions of minima at {final_sol_mean}\nStandard deviation of positions of minima equal to {final_sol_std}\n\n'
+          'Final cost mean: {cost_mean:.4e}\nFinal cost standard deviation: {cost_std:.4e}\n'
           '\nMean of generations that reached minimum: {idx_mean}\nStandard deviation fo generations that reached'
-          ' minimum: {index_std:.4f}'.format(cost_mean=final_cost_mean, cost_std=final_cost_std,
+          ' minimum: {index_std:.4f}'.format(final_sol_mean=final_sol_mean, final_sol_std=final_sol_std, cost_mean=final_cost_mean, cost_std=final_cost_std,
                                          idx_mean=idx_mean, index_std=idx_std))
 
 
@@ -295,7 +303,7 @@ def FunctionToMinimalize(x):
 
 
 if __name__ == '__main__':
-    costs, sols, idx = perform_n_runs(20, FunctionToMinimalize, 2, -50, 50, 50, True)
+    costs, sols, idx = perform_n_runs(20, FunctionToMinimalize, 2, -50, 50, 300, True)
     results_plt(costs, sols, idx)
-    stat(idx, costs)
+    stat(idx, costs, sols)
 
